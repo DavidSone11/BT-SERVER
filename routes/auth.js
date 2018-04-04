@@ -6,6 +6,7 @@ require('mongoose-query-paginate');
 var fs = require('fs');
 var jwt = require('jsonwebtoken');
 var basicAuth = require('basic-auth');
+var q = require('q');
 
 
 
@@ -14,44 +15,47 @@ var auth = {
     var user = basicAuth(req)
 
     if (user.name == '' && user.pass == '') {
-      res.status = 401
-      return res.json({
+
+      return res.status(401).json({
         message: 'Access denied',
         statusCode: 401
       })
 
     }
     var username = user.name;
-    var passwrd = user.pass;
+    auth.findByUsername(username).then(function (response) {
+      if (response.status) {
+        var token = auth.generateToken(username);
+        return res.json({
+          token: token,
+          username:username,
+          role:response.results.roleCode
 
-    if (auth.findByUsername(username)) {
-      var token = auth.generateToken(username);
-      return res.json({
-        token: token
-      })
-    } else {
-      res.status = 404
-      return res.json({
-        message: 'Access denied User Not Found',
-        statusCode: 404
-      })
-    }
+        })
+      } else {
+        return res.json({
+          message: 'Access denied User Not Found',
+        })
+      }
+    });
   },
 
   findByUsername: function (username) {
-    var isUserFound = false;
+    
+    var defer = q.defer();
     UserModel.findOne({ userName: username }).exec(function (err, user) {
       if (err) throw err;
       else {
         if (typeof (user) == "undefined" || user == null) {
-          isUserFound = isUserFound;
+          defer.resolve({status:false,results:user});
         } else {
-          isUserFound = !isUserFound;
+
+          defer.resolve({status:true,results:user});
         }
       }
-      return isUserFound;
-    });
 
+    });
+    return defer.promise;
   },
   generateToken: function (username) {
     return jwt.sign({
