@@ -7,6 +7,7 @@ var auth = require("./auth");
 
 
 router.post('/login',auth.login);
+router.get('/logout',auth.logout);
 
 
 router.get('/api/v1/users/getAllUsers',user.getAllUsers);

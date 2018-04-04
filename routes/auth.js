@@ -26,10 +26,11 @@ var auth = {
     auth.findByUsername(username).then(function (response) {
       if (response.status) {
         var token = auth.generateToken(username);
+        res.cookie('token', token, { maxAge: 900000, httpOnly: true });
         return res.json({
           token: token,
-          username:username,
-          role:response.results.roleCode
+          username: username,
+          role: response.results.roleCode
 
         })
       } else {
@@ -41,16 +42,16 @@ var auth = {
   },
 
   findByUsername: function (username) {
-    
+
     var defer = q.defer();
     UserModel.findOne({ userName: username }).exec(function (err, user) {
       if (err) throw err;
       else {
         if (typeof (user) == "undefined" || user == null) {
-          defer.resolve({status:false,results:user});
+          defer.resolve({ status: false, results: user });
         } else {
 
-          defer.resolve({status:true,results:user});
+          defer.resolve({ status: true, results: user });
         }
       }
 
@@ -64,9 +65,19 @@ var auth = {
     }, require("../config/secret.config").secretKey());
   },
 
-  logout:function(req,res){
-
-
+  logout: function (req, res) {
+   cookie = req.cookies;
+    //cookie = req.cookies['token']
+    for (var prop in cookie) {
+        if (!cookie.hasOwnProperty(prop)) {
+            continue;
+        }    
+        res.cookie(prop, '', {expires: new Date(0)});
+    }
+    res.status(200).json({
+      message:"logout successfully!!!!",
+      status:200
+    })
   }
 
 }
