@@ -12,6 +12,7 @@ var users = {
   login: function (req, res) {
      
     var username  = req.query.username;
+    var username  = req.query.password;
 
 
 

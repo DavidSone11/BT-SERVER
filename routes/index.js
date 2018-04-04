@@ -1,8 +1,12 @@
 var express = require('express');
 var router = express.Router();
 
-var user = require("./users")
+var user = require("./users");
+var auth = require("./auth");
 
+
+
+router.post('/login',auth.login);
 
 
 router.get('/api/v1/users/getAllUsers',user.getAllUsers);
