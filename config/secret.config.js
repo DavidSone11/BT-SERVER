@@ -1,3 +1,5 @@
-module.exports = function() {
-    return 'super.super.secret.shhh';
+module.exports =  {
+    secretKey:function(){
+        return 'super.super.secret.shhh';
+    }
   };
