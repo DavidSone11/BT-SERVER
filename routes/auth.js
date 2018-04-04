@@ -62,6 +62,11 @@ var auth = {
       exp: Math.floor(Date.now() / 1000) + (60 * 60),
       data: username
     }, require("../config/secret.config").secretKey());
+  },
+
+  logout:function(req,res){
+
+
   }
 
 }
